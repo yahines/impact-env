@@ -7,6 +7,11 @@ import plotly.express as px
 import numpy as np
 import os
 
+""" st.set_page_config(page_title="Streamlit App", 
+                   page_icon=":guardsman:", 
+                   layout="wide")
+st.title("Streamlit App") """
+
 # --- Chargement des données ---
 #@st.cache_data
 #def load_data():
