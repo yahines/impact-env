@@ -1,3 +1,56 @@
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+
+# Simulation de tes données pour une catégorie
+df = pd.read_csv("data/AGB_CIQUAL_food_products.csv")  # Doit contenir 'Catégorie', 'Score unique EF'
+
+# --- Interface de sélection ---
+# aliments = df["Nom du Produit en Français"].dropna().unique()
+# aliments_entree = df[df["Groupe d'aliment"] == "Entrée"]["Nom du Produit en Français"].dropna().unique()
+# print(aliments.len())
+
+# entree = st.selectbox("Choisissez vos aliments :", aliments_entree)  
+# plat = st.selectbox("Choisissez vos aliments :", aliments)
+# fromage = st.selectbox("Choisissez vos aliments :", aliments)
+# desset = st.selectbox("Choisissez vos aliments :", aliments)
+# boisson = st.selectbox("Choisissez vos aliments :", aliments)
+
+
+# Agrégation des scores EF
+agg_df = df.groupby("Groupe d'aliment")["Score unique EF"].agg(['min', 'median', 'max']).reset_index()
+
+st.title("🌿 Impact environnemental des catégories alimentaires")
+st.write("Affichage min / médiane / max du Score Unique EF par catégorie")
+
+# Pour chaque ligne, une barre horizontale avec les 3 valeurs
+for index, row in agg_df.iterrows():
+    cat = row["Groupe d'aliment"]
+    min_val, med_val, max_val = row['min'], row['median'], row['max']
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=[min_val, med_val, max_val],
+        y=[cat, cat, cat],
+        orientation='h',
+        marker_color=["#A8DADC", "#457B9D", "#1D3557"],
+        name="Min / Médiane / Max",
+        customdata=[["Min"], ["Médiane"], ["Max"]],
+        hovertemplate='%{customdata[0]}: %{x}<extra></extra>',
+        showlegend=False
+    ))
+
+
+
+    fig.update_layout(
+        height=70,
+        margin={"l": 50, "r": 10, "t": 10, "b": 10},
+        xaxis={"title": 'Score Unique EF', "showgrid": False},
+        yaxis={"showticklabels": True},
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+
 #import streamlit as st
 #st.set_page_config(page_title="Streamlit App", page_icon=":guardsman:", layout="wide")
 #st.title("Streamlit App")
@@ -7,16 +60,11 @@ import plotly.express as px
 import numpy as np
 import os
 
+# appli multipages 
 # st.set_page_config(page_title="Streamlit App", 
 #                    page_icon=":guardsman:", 
 #                    layout="wide")
 # st.title("Streamlit App")
-
-# --- Chargement des données ---
-#@st.cache_data
-#def load_data():
-    #df = pd.read_csv('../data/AGB_CIQUAL_food_products.csv')  # Fichier fusionné contenant nutrition + environnement
-    #return df
 
 # --- Chargement des données ---
 def load_data():
@@ -28,9 +76,7 @@ df = load_data()
 # --- Titre ---
 st.title("🍽️ Sélectionnez vos aliments et découvrez leur empreinte environnementale")
 
-# --- Interface de sélection ---
-aliments = df["Nom du Produit en Français"].dropna().unique()
-selection = st.multiselect("Choisissez vos aliments :", aliments)
+
 
 # --- Affichage des résultats ---
 if selection:
@@ -116,3 +162,4 @@ if selection:
 
 else:
     st.info("Veuillez choisir au moins un aliment pour afficher les résultats.")
+
