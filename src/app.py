@@ -1,6 +1,3 @@
-#import streamlit as st
-#st.set_page_config(page_title="Streamlit App", page_icon=":guardsman:", layout="wide")
-#st.title("Streamlit App")
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -29,6 +26,7 @@ df = load_data()
 st.title("🍽️ Sélectionnez vos aliments et découvrez leur empreinte environnementale")
 
 # --- Interface de sélection ---
+# choix 1
 aliments = df["Nom du Produit en Français"].dropna().unique()
 selection = st.multiselect("Choisissez vos aliments :", aliments)
 
@@ -116,3 +114,14 @@ if selection:
 
 else:
     st.info("Veuillez choisir au moins un aliment pour afficher les résultats.")
+
+# choix 2 agbApp
+# case à cocher avec les 8 elem
+# selectionner liste de groupe 
+# selectionner liste de sous groupe
+# selectionner typpe et sous types et pas sou grp si fruit si viande
+# adapter la colonn e de filtrage en fonction de la case à cocher 
+# par exp si boisson je passe a filtrage ss grp ensuite type
+# liste des type de cuisson
+# propose liste des produits filtre si possible avec le score unique EFdans la select box dans loredre decroissant
+# on affiche tt les produit selectionnes avec le score unique EF classe et somme des apports nutritionnels
