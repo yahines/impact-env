@@ -4,7 +4,7 @@ import numpy as np
 import plotly.graph_objects as go
 
 # --- Chargement des données ---
-merged_df = pd.read_csv("AGB_CIQUAL_food_products_category_type.csv")
+merged_df = pd.read_csv("src/AGB_CIQUAL_food_products_category_type.csv")
 
 # --- Titre ---
 st.title("🍽️ Sélectionnez vos aliments et découvrez leurs impacts environnementaux 🌿")
