@@ -3,46 +3,54 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 import os
+import plotly.graph_objects as go
 
 # --- Chargement des données ---
 merged_df = pd.read_csv("data/AGB_CIQUAL_food_products_category_type.csv")
 
 # --- Titre ---
-#st.title("🍽️ Sélectionnez vos aliments et découvrez leur empreinte environnementale 🌿")
-st.set_page_config(page_title="🍽️ Sélectionnez vos aliments et découvrez leur empreinte environnementale 🌿", layout="wide")
+st.title("🍽️ Sélectionnez vos aliments et découvrez leurs impacts environnementaux 🌿")
+# st.set_page_config(page_title="🍽️ Sélectionnez vos aliments et découvrez leur empreinte environnementale 🌿", layout="wide")
 
 # --- Agrégation des scores EF ---
 agg_df_gen = merged_df.groupby("Groupe d'aliment")["Score unique EF"].agg(['min', 'median', 'max']).reset_index()
 # Pour chaque ligne, une barre horizontale avec les 3 valeurs
-for index, row in agg_df_gen.iterrows():
-    cat = row["Groupe d'aliment"]
-    min_val, med_val, max_val = row['min'], row['median'], row['max']
 
-    fig = go.Figure()
-    fig.add_trace(go.Bar(
-        x=[min_val, med_val, max_val],
-        y=[cat, cat, cat],
-        orientation='h',
-        marker_color=["rgb(235, 91, 37)", "rgb(116, 147, 83)", "rgb(237, 177, 11)"],
-        name="Min / Médiane / Max",
-        customdata=[["Min"], ["Médiane"], ["Max"]],
-        hovertemplate='%{customdata[0]}: %{x}<extra></extra>',
-        showlegend=False,
-        text=[f"{min_val:.2f}", f"{med_val:.2f}", f"{max_val:.2f}"],  # Affiche les valeurs
-        textposition="inside"
-    ))
+# with st.expander("Scores EF pour groupe d'aliment", expanded=True):
+#     for index, row in agg_df_gen.iterrows():
+#         cat = row["Groupe d'aliment"]
+#         min_val, med_val, max_val = row['min'], row['median'], row['max']
 
-    fig.update_layout(
-        height=50,
-        margin={"l": 5, "r": 5, "t": 5, "b": 5},
-        xaxis={"showgrid": False, "showticklabels": False },
-        yaxis={"showticklabels": True, "tickfont": {"size": 10}, "automargin": True},
-    )
-    st.plotly_chart(fig, use_container_width=False)
+#         fig = go.Figure()
+#         fig.add_trace(go.Bar(
+#             x=[min_val, med_val, max_val],
+#             y=[cat, cat, cat],
+#             orientation='h',
+#             marker_color=["rgb(235, 91, 37)", "rgb(116, 147, 83)", "rgb(237, 177, 11)"],
+#             name="Min / Médiane / Max",
+#             customdata=[["Min"], ["Médiane"], ["Max"]],
+#             hovertemplate='%{customdata[0]}: %{x}<extra></extra>',
+#             showlegend=False,
+#             text=[f"{min_val:.2f}", f"{med_val:.2f}", f"{max_val:.2f}"],  # Affiche les valeurs
+#             textposition="inside"
+#         ))
+
+#         fig.update_layout(
+#             height=50,
+#             margin={"l": 5, "r": 5, "t": 5, "b": 5},
+#             xaxis={"showgrid": False, "showticklabels": False },
+#             # yaxis={"showticklabels": True, "tickfont": {"size": 10}, "automargin": True},
+#             yaxis={
+#                 "showticklabels": True,
+#                 "tickfont": {"size": 16},  # Increased font size for y labels
+#                 "automargin": True
+#             },
+#         )
+#         st.plotly_chart(fig, use_container_width=False)
 
 # --- Interface de sélection ---
 # TODO DONE case à cocher avec les 8 elem
-st.subheader("Sélectionnez les éléments de votre menu :")
+st.subheader("\n\n Sélectionnez les éléments de votre menu :")
 selected_menus = {}
 menus = merged_df["Catégorie"].dropna().unique()
 selected_menus = st.segmented_control("éléments menu", menus.tolist(), selection_mode="multi", label_visibility="hidden")
@@ -99,7 +107,7 @@ if selected_menus:
                 if product_selection['selection']['rows']:
                     selected_products_df = product_search_result.iloc[product_selection['selection']['rows']]
                     # all_selected_products_df = pd.concat([all_selected_products_df, selected_products_df], ignore_index=True).set_index("Nom du Produit en Français")
-                    st.title('Vous avez mis dans votre assiette :')
+                    st.subheader('Vous avez mis dans votre assiette :')
                     st.dataframe(selected_products_df)
                     # Display the sum of the "Score unique EF" for the selected products
                     # st.markdown(f"**Somme du Score unique EF des produits sélectionnés :** {selected_products_df['Score unique EF'].sum():.2f}")
